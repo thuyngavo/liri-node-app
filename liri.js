@@ -8,6 +8,7 @@ var spotify = new Spotify(keys.spotify);
 var fs = require("fs");
 var fs = require("axios");
 var request = require("request");
+
 //vars to capture user inputs.
 var input = process.argv[2]; 
 var search = process.argv[3];
@@ -19,6 +20,9 @@ var search = process.argv[3];
     //movie-this (node liri.js movie-this '<movie name here>')
     //do-what-it-says (node liri.js do-what-it-says)
 
+command (input, search);
+
+function command() {
     if ( input === "concert-this" ) {
     concertThis(search);
     }else if (input === "spotify-this-song") {
@@ -28,7 +32,7 @@ var search = process.argv[3];
     }else if (input === "do-what-it-says"){
     doThis();
     }
-
+}
 
 //=============================================================================
 //function for concert-this (node liri.js concert-this <artist/band name here>)
@@ -45,7 +49,7 @@ function concertThis() {
         if (err) {
             console.log(err);
         } else { //if no error then log details
-            //var concerts = JSON.parse(body);
+            //var concerts = JSON.parse(",");
             for (var i = 0; i < response.concerts.length; i++) {  
                 console.log(
                     "\n-----------------------------------" +
@@ -112,7 +116,23 @@ function spotifyThisSong () {
 
 function movieThis () {
     
-    var queryUrl = "http://www.omdbapi.com/?t=" + search + "&y=&plot=short&apikey=trilogy";
+    var request = require("request");
+
+// Create an empty variable for holding the movie name
+var movieName = "";
+
+    //loop through all the words in the node argument
+    for (var i = 2; i < search.length; i++) {
+
+    if (i > 2 && i < search.length) {
+        movieName = movieName + "+" + search[i];
+    }
+    else {
+        movieName += search[i];
+    }
+    }
+    //api url
+    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
     console.log(queryUrl);
 
     //search defualt setting
@@ -132,34 +152,54 @@ function movieThis () {
         //log error
         if (err){ 
 			return console.log(err);
-		} else { //if no error then log details
+        } else { //if no error then log details
             console.log(
                 "\n-----------------------------------" +
-                "\nMovie: " + response.Title +
-                "\nReleased: " + response.Year +
-                "\nIMDB Rating: [ " + response.imdbRating +" ]" +
-                "\nRotten Tomato Rating: [ " + response.Ratings[1].Value +" ]" +
-                "\nCountry Released: " + response.Country +
-                "\nMovie Language: " + response.Language +
-                "\nPlot: " + response.Plot +
-                "\nActors: " + response.Actors +
+                "\nMovie: " + response.title +
+                "\nReleased: " + response.year +
+                "\nIMDB Rating: " + response.imdbRating +
+               // "\nRotten Tomato Rating: " + response.ratings[1].Value +
+                "\nCountry Released: " + response.country +
+                "\nMovie Language: " + response.language +
+                "\nPlot: " + response.plot +
+                "\nActors: " + response.actors +
                 "\n-----------------------------------\n"
             ); 
+
+            //loop parses through Ratings object to see if there is a RT rating
+            for(var i = 0; i < response.Ratings.length; i++) {
+                if(response.Ratings[i].Source === "Rotten Tomatoes") {
+                    console.log("* Rotten Tomatoes Rating: " + response.Ratings[i].Value);
+                    if(response.Ratings[i].Website !== undefined) {
+                        console.log("* Rotten Tomatoes URL: " + response.Ratings[i].Website);
+                    }
+                }
+            }
         }
+
     });
 }
+
 
 //=======================================================================
 //function for do-what-this-says (node liri.js do-what-it-says)
 //=======================================================================
 
 function doThis () {
-    fs.readFile('random.txt', 'utf8', function(err, data){
-		if (err){ 
+
+    //requiring core package for reading and writing files
+    var fs = require("fs");
+
+    //code to read from the "random.txt" file.
+    fs.readFile("random.txt", "utf8", function(err, data){
+        //log error
+        if (err){ 
 			console.log(err);
-		}
-        var dataArr = data.split(',');
-        command(dataArr[0], dataArr[1]);
+        } else { // if no error then log data
+        console.log(data);
+        var array = data.split(",");
+        console.log(array);
+        }
     });
     
 }
