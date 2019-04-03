@@ -5,6 +5,7 @@ require("dotenv").config();
 var keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
+var moment = require('moment');
 var fs = require("fs");
 var fs = require("axios");
 var request = require("request");
@@ -41,7 +42,7 @@ function command() {
 function concertThis() {
     //api url
     var queryUrl = "https://rest.bandsintown.com/artists/" + search + "/events?app_id=codingbootcamp";
-    console.log(queryUrl);
+    //console.log(queryUrl);
 
     //axios request to use bands in town api
     request(queryUrl, function(err, response) {
@@ -49,19 +50,30 @@ function concertThis() {
         if (err) {
             console.log(err);
         } else { //if no error then log details
-            //var concerts = JSON.parse("body");
-            //format date/time using moment
-            //var concertDT = concertData[0].datetime
-            //var momentDT = moment().format('L');
 
-            //console.log(JSON.stringify(response.concerts, null, 2));
-            
-            for (var i = 0; i < response.concerts.length; i++) {  
+            //console.log(JSON.parse(response.body));
+
+            var jsonData=JSON.parse(response.body);
+                            
+            if (jsonData.length>0) {
+                for (var i = 0; i < 1; i++) {
+                    
+                    //format date/time using moment
+                    var dateTime = moment(jsonData[i].datetime).format("MM/DD/YYY hh:00 A"); 
+
+                    console.log(
+                        "\n-----------------------------------" +
+                        "\nArtist: " + jsonData[i].lineup[0] +
+                        "\nVenue: " + jsonData[i].venue.name +
+                        "\nLocation: " + jsonData[i].venue.city + "," + jsonData[i].venue.region +
+                        "\nDate: " + dateTime +
+                        "\n-----------------------------------\n"
+                    );
+                };    
+            } else {
                 console.log(
-                    "\n-----------------------------------" +
-                    "\nVenue: " + response.concerts.venue.name +
-                    "\nLocation: " + response.concerts.venue.city +
-                    "\nDate: " + response.concerts.datetime +
+                    "\n-----------------------------------\n" +
+                    "Artist/band not found..." +
                     "\n-----------------------------------\n"
                 );
             }
@@ -73,26 +85,14 @@ function concertThis() {
 //function for spotify-this-song (node liri.js spotify-this-song '<song name here>')
 //==================================================================================
 
-function spotifyThisSong () {
-    // var song = "";      
+function spotifyThisSong () {     
 
     //search default setting
     if(!search) {
         search =  "the sign ace of base";
     }
     
-    //loop through all the words in the node argument
-    // for (var i = 2; i < search.length; i++) {
-
-    //     if (i > 2 && i < search.length) {
-    //         song = song + "+" + search[i];
-    //     }else {
-    //         song += search[i];
-    //     }
-    // }
-    
     // axios request to use spotify api request
-    //spotify.search({ type: 'track', query: song }, function(err, data) {
     spotify.search({ type: 'track', query: search }, function(err, data) {
         //log error
         if(err) {
@@ -119,27 +119,10 @@ function spotifyThisSong () {
 //=======================================================================
 
 function movieThis () {
-    
-    //var fs = require("axios");
-
-    // Create an empty variable for holding the movie name
-    var movieName = "";
-
-    //loop through all the words in the node argument
-    for (var i = 2; i < search.length; i++) {
-
-        if (i > 2 && i < search.length) {
-            movieName = movieName + "+" + search[i];
-        }
-        else {
-            movieName += search[i];
-        }
-    }
 
     //api url
     var queryUrl = "http://www.omdbapi.com/?apikey=trilogy&t=" + search ;
-    //var queryUrl = "http://www.omdbapi.com/?t=" + search + "&y=&plot=short&apikey=trilogy";
-    console.log(queryUrl);
+    //console.log(queryUrl);
 
     //search defualt setting
     if (!search) {
@@ -151,46 +134,58 @@ function movieThis () {
             "\nIt's on Netflix!" +
             "\n-----------------------------------\n"
         ); 
-    }
+    } else {
+        // Create an empty variable for holding the movie name
+        var movieName = "";
+
+        //loop through all the words in the node argument
+        for (var i = 2; i < search.length; i++) {
     
-    //axios request to use omdb api
-    request(queryUrl, function(err, response) {
-        //log error
-        if (err){ 
-			return console.log(err);
-        } else { //if no error then log details
-            //var jsonData = response;
-
-            //console.log(JSON.parse(response.body));
-
-            var jsonData=JSON.parse(response.body);
-
-            console.log(
-                "\n-----------------------------------" +
-                "\nMovie: " + jsonData.Title +
-                "\nReleased: " + jsonData.Year +
-                "\nIMDB Rating: " + jsonData.ImdbRating +
-                "\nRotten Tomato Rating: " + rottenTomato() +
-                "\nCountry Released: " + jsonData.Country +
-                "\nMovie Language: " + jsonData.Language +
-                "\nPlot: " + jsonData.Plot +
-                "\nActors: " + jsonData.Actors +
-                "\n-----------------------------------\n"
-            ); 
-
-            //loop parses through Ratings object in response.body to see if there is a RT rating
-            function rottenTomato (){
-                for(var i = 0; i > 0; i++) {
-                    if(jsonData.Ratings[i].Source === "Rotten Tomatoes") {
-                        console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[i].Value);
-                    } else {
-                        console.log ("Rotten Tomatoes Rating: null " );
-                    }
-                }
-            }    
+            if (i > 2 && i < search.length) {
+                movieName = movieName + "+" + search[i];
+            }
+            else {
+                movieName += search[i];
+            }
         }
 
-    });
+        //axios request to use omdb api
+        request(queryUrl, function(err, response) {
+            //log error
+            if (err){ 
+                return console.log(err);
+            } else { //if no error then log details
+
+                //console.log(JSON.parse(response.body));
+
+                var jsonData=JSON.parse(response.body);
+
+                console.log(
+                    "\n-----------------------------------" +
+                    "\nMovie: " + jsonData.Title +
+                    "\nReleased: " + jsonData.Year +
+                    "\nIMDB Rating: " + jsonData.imdbRating +
+                    "\nRotten Tomato Rating: " + rottenTomato() +
+                    "\nCountry Released: " + jsonData.Country +
+                    "\nMovie Language: " + jsonData.Language +
+                    "\nPlot: " + jsonData.Plot +
+                    "\nActors: " + jsonData.Actors +
+                    "\n-----------------------------------\n"
+                ); 
+
+                //loop parses through Ratings object in response.body to see if there is a RT rating
+                function rottenTomato (){
+                    for(var i = 0; i > 0; i++) {
+                        if(jsonData.Ratings[i].Source === "Rotten Tomatoes") {
+                            console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[i].Value);
+                        } else {
+                            console.log ("Rotten Tomatoes Rating: null " );
+                        }
+                    }
+                }    
+            }
+        });
+    }
 }
 
 
@@ -206,8 +201,6 @@ function doThis () {
     //code to read from the "random.txt" file.
     fs.readFile("random.txt", "utf8", function(err, data){
         
-        
-
         //log error
         if (err){ 
 			console.log(err);
