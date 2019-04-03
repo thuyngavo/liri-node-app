@@ -176,10 +176,10 @@ function movieThis () {
                 //loop parses through Ratings object in response.body to see if there is a RT rating
                 function rottenTomato (){
                     for(var i = 0; i > 0; i++) {
-                        if(jsonData.Ratings[i].Source === "Rotten Tomatoes") {
-                            console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[i].Value);
+                        if(jsonData.Ratings[1].Source === "Rotten Tomatoes") {
+                            console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[1].Value);
                         } else {
-                            console.log ("Rotten Tomatoes Rating: null " );
+                            console.log ("Rotten Tomatoes Rating: " + null);
                         }
                     }
                 }    
@@ -205,9 +205,13 @@ function doThis () {
         if (err){ 
 			console.log(err);
         } else { // if no error then log data
-            console.log(data);
+            //console.log(data);
         var array = data.split(",");
-        console.log("node liri.js " + array[0] + " " + array[1]);
+        
+        input = array[0];
+        search = array[1];
+
+        command(input, search);
         
         }
     });
