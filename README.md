@@ -5,7 +5,7 @@ LIRI is like iPhone's SIRI. However,LIRI is a Language Interpretation and Recogn
 @thuyngavo
 
 # About
-The user can write one of the 4 commands:
+While in the user's bash/terminal, can write one of the 4 commands:
 
 - node liri.js concert-this "artist name" :: This will search the Bands in Town Artist Events API and display the name of the concert venue, location, and the date/time of the concert.
 
@@ -13,15 +13,15 @@ The user can write one of the 4 commands:
 
 - node liri.js spotify-this-song "Song Name" :: This allows users to Search a song and display the artist name, song name a preview link on spotify and the album name. If no song name is given then a default response for The Sign by Ace of Base will be given.
 
-
+![Image of concert-this function](images/spotify-this-song.PNG)
 
 - node liri.js movie-this "movie" :: This Allows users to Search OMDB for detailed nformation on a desired movie. If no movie given, then a default reply for Mr Nobody will be given. 
 
-
+![Image of concert-this function](images/movie-this.PNG)
 
 - node.js liri do-what-it-says :: This allows the user to run a command that is written inside the random.txt document.
 
-
+![Image of concert-this function](images/do-what-it-says.PNG)
 
 
 # Contact
