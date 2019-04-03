@@ -39,7 +39,7 @@ function command() {
 //=============================================================================
 
 function concertThis() {
-
+    //api url
     var queryUrl = "https://rest.bandsintown.com/artists/" + search + "/events?app_id=codingbootcamp";
     console.log(queryUrl);
 
@@ -49,13 +49,19 @@ function concertThis() {
         if (err) {
             console.log(err);
         } else { //if no error then log details
-            //var concerts = JSON.parse(",");
+            //var concerts = JSON.parse("body");
+            //format date/time using moment
+            //var concertDT = concertData[0].datetime
+            //var momentDT = moment().format('L');
+
+            //console.log(JSON.stringify(response.concerts, null, 2));
+            
             for (var i = 0; i < response.concerts.length; i++) {  
                 console.log(
                     "\n-----------------------------------" +
-                    "\nVenue: " + response.concerts[i].venue.name +
-                    "\nLocation: " + response.concerts[i].venue.city +
-                    "\nDate: " + response.concerts[i].datetime +
+                    "\nVenue: " + response.concerts.venue.name +
+                    "\nLocation: " + response.concerts.venue.city +
+                    "\nDate: " + response.concerts.datetime +
                     "\n-----------------------------------\n"
                 );
             }
@@ -68,22 +74,20 @@ function concertThis() {
 //==================================================================================
 
 function spotifyThisSong () {
-    //var song = "";      
+    // var song = "";      
 
     //search default setting
     if(!search) {
         search =  "the sign ace of base";
     }
     
-    // //loop to hold song name if search is more than one word
+    //loop through all the words in the node argument
     // for (var i = 2; i < search.length; i++) {
 
     //     if (i > 2 && i < search.length) {
-    //       song = song + "+" + search[i];
-    //     }
-    //     else {
-    //       song += search[i];
-      
+    //         song = song + "+" + search[i];
+    //     }else {
+    //         song += search[i];
     //     }
     // }
     
@@ -116,23 +120,25 @@ function spotifyThisSong () {
 
 function movieThis () {
     
-    var request = require("request");
+    //var fs = require("axios");
 
-// Create an empty variable for holding the movie name
-var movieName = "";
+    // Create an empty variable for holding the movie name
+    var movieName = "";
 
     //loop through all the words in the node argument
     for (var i = 2; i < search.length; i++) {
 
-    if (i > 2 && i < search.length) {
-        movieName = movieName + "+" + search[i];
+        if (i > 2 && i < search.length) {
+            movieName = movieName + "+" + search[i];
+        }
+        else {
+            movieName += search[i];
+        }
     }
-    else {
-        movieName += search[i];
-    }
-    }
+
     //api url
-    var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+    var queryUrl = "http://www.omdbapi.com/?apikey=trilogy&t=" + search ;
+    //var queryUrl = "http://www.omdbapi.com/?t=" + search + "&y=&plot=short&apikey=trilogy";
     console.log(queryUrl);
 
     //search defualt setting
@@ -153,28 +159,35 @@ var movieName = "";
         if (err){ 
 			return console.log(err);
         } else { //if no error then log details
+            //var jsonData = response;
+
+            //console.log(JSON.parse(response.body));
+
+            var jsonData=JSON.parse(response.body);
+
             console.log(
                 "\n-----------------------------------" +
-                "\nMovie: " + response.title +
-                "\nReleased: " + response.year +
-                "\nIMDB Rating: " + response.imdbRating +
-               // "\nRotten Tomato Rating: " + response.ratings[1].Value +
-                "\nCountry Released: " + response.country +
-                "\nMovie Language: " + response.language +
-                "\nPlot: " + response.plot +
-                "\nActors: " + response.actors +
+                "\nMovie: " + jsonData.Title +
+                "\nReleased: " + jsonData.Year +
+                "\nIMDB Rating: " + jsonData.ImdbRating +
+                "\nRotten Tomato Rating: " + rottenTomato() +
+                "\nCountry Released: " + jsonData.Country +
+                "\nMovie Language: " + jsonData.Language +
+                "\nPlot: " + jsonData.Plot +
+                "\nActors: " + jsonData.Actors +
                 "\n-----------------------------------\n"
             ); 
 
-            //loop parses through Ratings object to see if there is a RT rating
-            for(var i = 0; i < response.Ratings.length; i++) {
-                if(response.Ratings[i].Source === "Rotten Tomatoes") {
-                    console.log("* Rotten Tomatoes Rating: " + response.Ratings[i].Value);
-                    if(response.Ratings[i].Website !== undefined) {
-                        console.log("* Rotten Tomatoes URL: " + response.Ratings[i].Website);
+            //loop parses through Ratings object in response.body to see if there is a RT rating
+            function rottenTomato (){
+                for(var i = 0; i > 0; i++) {
+                    if(jsonData.Ratings[i].Source === "Rotten Tomatoes") {
+                        console.log("Rotten Tomatoes Rating: " + jsonData.Ratings[i].Value);
+                    } else {
+                        console.log ("Rotten Tomatoes Rating: null " );
                     }
                 }
-            }
+            }    
         }
 
     });
@@ -192,13 +205,17 @@ function doThis () {
 
     //code to read from the "random.txt" file.
     fs.readFile("random.txt", "utf8", function(err, data){
+        
+        
+
         //log error
         if (err){ 
 			console.log(err);
         } else { // if no error then log data
-        console.log(data);
+            console.log(data);
         var array = data.split(",");
-        console.log(array);
+        console.log("node liri.js " + array[0] + " " + array[1]);
+        
         }
     });
     
